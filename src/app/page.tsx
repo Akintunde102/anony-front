@@ -1,95 +1,106 @@
+'use client'
 import Image from "next/image";
 import styles from "./page.module.css";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+
+  const [users, setUsers] = useState([])
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+
+  const getUsers = async () => {
+    const response = await axios.get("http://localhost:9000/users");
+    return response.data
+  }
+
+  const addUser = async (e: any) => {
+    e.preventDefault()
+    const response = await axios.post("http://localhost:9000/users", {
+      firstName,
+      lastName,
+    });
+
+    return response;
+  }
+
+  useEffect(() => {
+    getUsers().then((data) => {
+      setUsers(data);
+    })
+  }, [])
+
+
+
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
       <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+        <div style={{
+          flex: 1
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+        }}>
+          <form
+            style={{
+              margin: "0 20px",
+            }}
+            onSubmit={addUser}
+          >
+            <input
+              style={{ display: "block", padding: "10px", margin: "3px 0", width: "100%" }}
+              type="text"
+              value={firstName}
+              placeholder="First Name"
+              name="firstName"
+              onChange={(e) => {
+                setFirstName(e.target.value)
+              }}
+            />
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
+            <input
+              style={{ display: "block", padding: "10px", margin: "3px 0", width: "100%" }}
+              type="text"
+              value={lastName}
+              placeholder="Last Name"
+              name="lastName"
+              onChange={(e) => {
+                setLastName(e.target.value)
+              }}
+            />
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+            <button
+              style={{ display: "block", padding: "10px", margin: "3px 0", width: "100%" }}
+              type="submit">
+              Add a fixed User
+            </button>
+          </form>
+        </div>
+
+        <div style={{
+          flex: 1
+
+        }}>
+          <h1>Users List</h1>
+          <div>
+            {
+              users.map((user: any) => {
+                return (
+                  <div style={{
+                    margin: "10px",
+                    color: "blue"
+                  }}>
+                    <p>{user.firstName}</p>
+                    <p>{user.lastName}</p>
+                    <p>{user._id}</p>
+                  </div>
+                )
+              })
+            }
+          </div>
+        </div>
+
       </div>
-    </main>
+    </main >
   );
 }
